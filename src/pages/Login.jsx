@@ -1,11 +1,29 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./login.css"; // optional small styles (see below)
+import "./login.css";
+
+/** Static users (demo only) */
+const USERS = {
+  "admin2025": { password: "admin@$2025", role: "admin" },
+  "ase": { password: "ase", role: "ase" },
+  "contract operation": { password: "contract", role: "contract operation" },
+  "energy industry": { password: "energy", role: "energy industry" },
+};
 
 export default function Login() {
   const nav = useNavigate();
-  const [form, setForm] = React.useState({ email: "", password: "", remember: true });
+  const [form, setForm] = React.useState({
+    username: "",
+    password: "",
+    remember: true,
+  });
   const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    // Prefill username if remembered
+    const saved = localStorage.getItem("userName") || "";
+    if (saved) setForm((p) => ({ ...p, username: saved }));
+  }, []);
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -16,55 +34,47 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    // 👉 Replace with your own auth logic. For demo, accept anything non-empty.
-    if (!form.email || !form.password) {
-      setError("Please enter email and password.");
+    const key = form.username?.trim();
+    const user = USERS[key];
+    if (!key || !form.password || !user || user.password !== form.password) {
+      setError("Invalid credentials");
       return;
     }
 
-    // Save login flag (optionally save a token or user too)
     localStorage.setItem("isLoggedIn", "true");
-    if (form.remember) {
-      localStorage.setItem("userEmail", form.email);
-    } else {
-      localStorage.removeItem("userEmail");
-    }
+    localStorage.setItem("userRole", user.role);
+    if (form.remember) localStorage.setItem("userName", key);
+    else localStorage.removeItem("userName");
 
-    nav("/", { replace: true }); // go to app
+    // Send to your app home (adjust if you want /dashboard)
+    nav("/", { replace: true });
   };
-
-  React.useEffect(() => {
-    // prefill email if previously stored
-    const saved = localStorage.getItem("userEmail") || "";
-    if (saved) setForm((p) => ({ ...p, email: saved }));
-  }, []);
 
   return (
     <div className="login-wrap">
       <form className="login-card" onSubmit={submit}>
         <h2>Sign in</h2>
-        <div>
-          <label className="login-label">Username</label>
-          <input
-            className="login-input"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={onChange}
-            placeholder="Username"
-          />
-        </div>
-        <div>
-          <label className="login-label">Password</label>
-          <input
-            className="login-input"
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={onChange}
-            placeholder="••••••••"
-          />
-        </div>
+
+        <label className="login-label">Username</label>
+        <input
+          className="login-input"
+          name="username"
+          value={form.username}
+          onChange={onChange}
+          placeholder='Username'
+          autoFocus
+        />
+
+        <label className="login-label" style={{ marginTop: 10 }}>Password</label>
+        <input
+          className="login-input"
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={onChange}
+          placeholder="••••••••"
+        />
+
         <label className="login-check">
           <input type="checkbox" name="remember" checked={form.remember} onChange={onChange} />
           Remember me
@@ -74,6 +84,11 @@ export default function Login() {
 
         <div className="login-actions">
           <button className="btn primary" type="submit">Login</button>
+        </div>
+
+        {/* Helper for testers */}
+        <div style={{ marginTop: 12, fontSize: 12, color: "#6b7280" }}>
+          Demo users: admin@2025 / admin@$2025 • ase/ase • contract operation/contract • energy industry/energy
         </div>
       </form>
     </div>
