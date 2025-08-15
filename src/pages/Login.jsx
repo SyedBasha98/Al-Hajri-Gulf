@@ -12,15 +12,10 @@ const USERS = {
 
 export default function Login() {
   const nav = useNavigate();
-  const [form, setForm] = React.useState({
-    username: "",
-    password: "",
-    remember: true,
-  });
+  const [form, setForm] = React.useState({ username: "", password: "", remember: true });
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    // Prefill username if remembered
     const saved = localStorage.getItem("userName") || "";
     if (saved) setForm((p) => ({ ...p, username: saved }));
   }, []);
@@ -46,8 +41,8 @@ export default function Login() {
     if (form.remember) localStorage.setItem("userName", key);
     else localStorage.removeItem("userName");
 
-    // Send to your app home (adjust if you want /dashboard)
-    nav("/", { replace: true });
+    // ✅ Redirect directly to Bank Guarantee page
+    nav("/bank-guarantee", { replace: true });
   };
 
   return (
@@ -61,7 +56,7 @@ export default function Login() {
           name="username"
           value={form.username}
           onChange={onChange}
-          placeholder='Username'
+          placeholder="Username"
           autoFocus
         />
 
@@ -86,9 +81,9 @@ export default function Login() {
           <button className="btn primary" type="submit">Login</button>
         </div>
 
-        {/* Helper for testers */}
+        {/* Helper for testers (matches USERS above) */}
         <div style={{ marginTop: 12, fontSize: 12, color: "#6b7280" }}>
-          Demo users: admin@2025 / admin@$2025 • ase/ase • contract operation/contract • energy industry/energy
+          Demo users: admin2025/admin@$2025 • ase/ase • contract operation/contract • energy industry/energy
         </div>
       </form>
     </div>

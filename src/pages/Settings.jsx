@@ -1,11 +1,17 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Settings() {
-  const logout = () => { localStorage.setItem("isLoggedIn","false"); window.location.href="/"; };
+function LogoutButton() {
+  const nav = useNavigate();
   return (
-    <div className="page">
-      <h2>Settings</h2>
-      <div className="card"><button className="btn danger" onClick={logout}>Logout</button></div>
-    </div>
+    <button
+      onClick={() => {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("userRole");
+        nav("/login", { replace: true }); // ✅ Redirect to Login page
+      }}
+    >
+      Logout
+    </button>
   );
 }
+export default LogoutButton
